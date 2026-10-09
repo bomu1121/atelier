@@ -30,6 +30,29 @@
 
 ---
 
+## 2026-10-09 · 迭代 03：reader —— 本库专属阅读器
+
+**触发**：用户指令「为这个项目单独开发一个文档阅读工具吧」（2026-10-09）。
+
+**选型**（先给结论）：零依赖单文件 Node 服务器（`node:http` + `node:fs`，无 package.json、无 npm install、无构建步骤）+ 单页阅读前端。理由：clone 即用、完全离线（marked v12.0.2 vendored 进 `reader/vendor/`）、天然避开本机 Vite 8 已知坑。
+
+**交付**：`reader/server.mjs`（扫描全库 .md、JSON API、静态服务、路径逃逸防护、端口占用自动 +1、win32 自动开浏览器）、`reader/index.html`（三栏布局：文件树/正文/本页目录，GFM 表格，正文 `.md` 相对链接转站内路由，亮暗主题记忆，窄屏自适应）。
+
+**验证记录（全部实际执行）**：
+
+- curl 端到端：`/api/docs` 返回 6 个 md（README 置顶排序正确）；`/api/doc` 中文内容经 Node fetch 解析确认 UTF-8 无损（Git Bash 控制台显示的「乱码」是终端显示问题，不是数据问题，已用两种方式交叉确认）；`/vendor/marked.min.js` 200/35479B；路径逃逸 `../` 返回 403；非 .md 请求 403。
+- **首轮验证抓出 2 个真 bug 并修复**：① `readdir(withFileTypes)` 把 Dirent 当字符串用导致 `/api/docs` 500；② Windows 下 `path.resolve(dir, '/vendor/x')` 跳到盘符根导致 vendor 404（已剥前导斜杠修复）。
+- 浏览器目视验收三轮（1440×900 截图，视觉模型逐项检查）：亮色首页（三栏布局/中文/表格/配色）、重表格文档页（STAGE-01-drills：GFM 表格边框、blockquote、面包屑）、暗色主题（对比度、无亮色残留）——全部通过。
+- 未做真实鼠标点击链路验证（Playwright 点击侧栏链接在 IAB 中超时，改用等价的 hash 路由路径验证）——**侧栏链接真实点击未实测**，但点击与 hash 走同一 `hashchange → show()` 代码路径。
+
+**遗留**：
+
+- 阅读 `qa/` 时文件名里的中文日期主题在侧栏排序按 `zh-Hans-CN` locale，未来 qa 文件多了可加「最近更新」分组。
+- marked 已 vendored，升级需手动替换 vendor 文件（v12.0.2，MIT）。
+- 服务器只监听 127.0.0.1（刻意，本库是私人内容）。
+
+---
+
 ## 2026-10-09 · 迭代 01：建库
 
 **触发**：用户提供 GitHub 空仓库（github.com/bomu1121/atelier），此前会话产出需归档且明确「方案平权、不设正统」。

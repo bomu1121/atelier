@@ -31,6 +31,14 @@
 - 新建时从 [qa/TEMPLATE.md](./qa/TEMPLATE.md) 复制头部的元信息块。
 - 一次请教解决一个主题；跨主题拆多个文件，方便日后按主题检索。
 
+## 用阅读器看文档（推荐）
+
+```bash
+node reader/server.mjs     # Node ≥ 20，无需 npm install；默认 http://127.0.0.1:8765
+```
+
+启动后自动打开浏览器。功能：侧边栏全库文件树、GFM 表格渲染、正文内 `.md` 链接直接跳转（如 `./RESOURCES.md`）、每页自动生成右侧目录、亮/暗主题（记忆选择）。**完全离线**（marked 已 vendored 在 `reader/vendor/`），不联网可用。端口被占会自动 +1 重试，也可 `PORT=9000 node reader/server.mjs` 指定。
+
 ## 目录结构
 
 ```
@@ -41,6 +49,10 @@ atelier/
 │   ├── README.md        # 路线本体（六阶段 + 出师自查标准）
 │   ├── STAGE-01-drills.md # 阶段 1 操作手册（8 周课表 + 逐练习要领）
 │   └── RESOURCES.md     # 资料清单（每条带验证状态）
+├── reader/              # 本库专属阅读器（零依赖 Node 服务）
+│   ├── server.mjs       # 启动入口
+│   ├── index.html       # 阅读页（内嵌样式与逻辑）
+│   └── vendor/marked.min.js
 ├── qa/
 │   └── TEMPLATE.md      # 请教记录模板
 └── practice/            # （预留）练习存档

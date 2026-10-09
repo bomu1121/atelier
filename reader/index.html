@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>atelier · 画室</title>
+<style>
+  :root {
+    --bg: #faf7f2; --panel: #f1ece3; --ink: #2c2620; --ink-2: #6b6157;
+    --line: #dcd4c6; --accent: #a05a2c; --accent-ink: #7c441f;
+    --code-bg: #ece6da; --block-bg: #f3eee4; --table-head: #e9e2d4;
+    --shadow: 0 1px 3px rgba(60,45,30,.08);
+  }
+  html[data-theme="dark"] {
+    --bg: #1e1b18; --panel: #171512; --ink: #e6dfd4; --ink-2: #9d9285;
+    --line: #35302a; --accent: #d99a62; --accent-ink: #e8b285;
+    --code-bg: #14120f; --block-bg: #26221d; --table-head: #26221d;
+    --shadow: 0 1px 3px rgba(0,0,0,.4);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.75 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    display: grid; grid-template-columns: 264px minmax(0, 1fr) 232px;
+    height: 100vh; overflow: hidden;
+  }
+  /* ── 侧边栏 ── */
+  aside {
+    background: var(--panel); border-right: 1px solid var(--line);
+    overflow-y: auto; padding: 18px 10px 30px;
+  }
+  .brand { font-weight: 700; font-size: 17px; letter-spacing: .5px; padding: 0 10px 14px; }
+  .brand small { display: block; font-weight: 400; color: var(--ink-2); font-size: 12px; margin-top: 2px; }
+  .group { margin: 14px 0 4px; padding: 0 10px; font-size: 12px; color: var(--ink-2); letter-spacing: 1px; }
+  .nav a {
+    display: block; padding: 5px 10px; border-radius: 6px; color: var(--ink);
+    text-decoration: none; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .nav a:hover { background: rgba(160,90,44,.10); }
+  .nav a.on { background: var(--accent); color: #fff; }
+  #themeBtn {
+    position: fixed; left: 224px; bottom: 14px; z-index: 5; width: 30px; height: 30px;
+    border-radius: 50%; border: 1px solid var(--line); background: var(--panel);
+    color: var(--ink-2); cursor: pointer; font-size: 14px;
+  }
+  /* ── 正文 ── */
+  main { overflow-y: auto; scroll-behavior: smooth; }
+  article { max-width: 760px; margin: 0 auto; padding: 44px 40px 120px; }
+  .crumb { color: var(--ink-2); font-size: 12.5px; margin-bottom: 26px; font-family: Consolas, monospace; }
+  article h1 { font-size: 26px; line-height: 1.4; margin: 0 0 8px; }
+  article h2 { font-size: 20px; margin: 40px 0 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+  article h3 { font-size: 16.5px; margin: 28px 0 10px; }
+  article p, article li { font-size: 15px; }
+  article a { color: var(--accent-ink); text-decoration-color: rgba(160,90,44,.35); }
+  article blockquote {
+    margin: 14px 0; padding: 10px 16px; border-left: 3px solid var(--accent);
+    background: var(--block-bg); border-radius: 0 8px 8px 0; color: var(--ink);
+  }
+  article blockquote p { margin: 6px 0; }
+  article code {
+    background: var(--code-bg); border-radius: 4px; padding: 1.5px 6px;
+    font-family: Consolas, "Courier New", monospace; font-size: 13px;
+  }
+  article pre { background: var(--code-bg); border-radius: 8px; padding: 14px 16px; overflow-x: auto; box-shadow: var(--shadow); }
+  article pre code { background: none; padding: 0; font-size: 13px; line-height: 1.6; }
+  article table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 13.5px; display: block; overflow-x: auto; }
+  article th, article td { border: 1px solid var(--line); padding: 7px 11px; text-align: left; vertical-align: top; }
+  article th { background: var(--table-head); }
+  article tr:nth-child(even) td { background: rgba(0,0,0,.015); }
+  html[data-theme="dark"] article tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+  article img { max-width: 100%; }
+  article hr { border: none; border-top: 1px solid var(--line); margin: 34px 0; }
+  article input[type="checkbox"] { accent-color: var(--accent); margin-right: 4px; }
+  /* ── 目录 ── */
+  nav.toc { border-left: 1px solid var(--line); overflow-y: auto; padding: 44px 12px 30px; }
+  .toc h4 { margin: 0 0 10px; font-size: 12px; color: var(--ink-2); letter-spacing: 1px; font-weight: 600; }
+  .toc a { display: block; color: var(--ink-2); text-decoration: none; font-size: 12.5px; padding: 3px 8px; border-radius: 5px; border-left: 2px solid transparent; }
+  .toc a.lv3 { padding-left: 22px; }
+  .toc a:hover { color: var(--accent-ink); }
+  .toc a.on { color: var(--accent-ink); border-left-color: var(--accent); background: rgba(160,90,44,.08); }
+  @media (max-width: 1100px) { body { grid-template-columns: 232px minmax(0, 1fr); } nav.toc { display: none; } #themeBtn { left: 196px; } }
+  @media (max-width: 720px) { body { grid-template-columns: minmax(0, 1fr); } aside { display: none; } #themeBtn { left: 14px; } article { padding: 30px 20px 100px; } }
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">atelier · 画室<small>多方案绘画学习实验场</small></div>
+  <div id="nav" class="nav"></div>
+</aside>
+<button id="themeBtn" title="切换亮/暗主题">◐</button>
+<main id="main"><article id="article"><p style="color:var(--ink-2)">加载中…</p></article></main>
+<nav class="toc" id="toc"></nav>
+
+<script src="/vendor/marked.min.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+marked.setOptions({ gfm: true });
+
+/* ── 主题 ── */
+const savedTheme = localStorage.getItem('atelier-theme') || 'light';
+document.documentElement.dataset.theme = savedTheme;
+$('#themeBtn').onclick = () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('atelier-theme', next);
+};
+
+/* ── 侧边栏：文件树 ── */
+async function loadNav() {
+  const docs = await (await fetch('/api/docs')).json();
+  const nav = $('#nav');
+  let lastGroup = null, html = '';
+  for (const p of docs) {
+    const group = p.includes('/') ? p.slice(0, p.indexOf('/')) : '（根目录）';
+    if (group !== lastGroup) { html += `<div class="group">${group}</div>`; lastGroup = group; }
+    const name = p.split('/').pop().replace(/\.md$/i, '');
+    html += `<a href="#/${p}" data-path="${p}" title="${p}">${name}</a>`;
+  }
+  nav.innerHTML = html;
+}
+
+/* ── 渲染 ── */
+function addHeadingIds(container) {
+  let n = 0;
+  container.querySelectorAll('h2, h3').forEach((h) => {
+    if (!h.id) h.id = 'sec-' + (++n) + '-' + encodeURIComponent(h.textContent.trim().slice(0, 24));
+  });
+}
+
+function buildToc(container) {
+  const toc = $('#toc');
+  const heads = [...container.querySelectorAll('h2, h3')];
+  if (!heads.length) { toc.innerHTML = ''; return; }
+  toc.innerHTML = '<h4>本页目录</h4>' + heads.map((h) =>
+    `<a href="#${h.id}" class="${h.tagName === 'H3' ? 'lv3' : ''}" data-target="${h.id}">${h.textContent}</a>`
+  ).join('');
+}
+
+/* 滚动时高亮 TOC 当前小节 */
+function watchToc() {
+  const links = [...document.querySelectorAll('#toc a')];
+  if (!links.length) return;
+  const heads = links.map((a) => document.getElementById(a.dataset.target)).filter(Boolean);
+  const onScroll = () => {
+    let cur = heads[0];
+    for (const h of heads) if (h.getBoundingClientRect().top < 90) cur = h;
+    links.forEach((a) => a.classList.toggle('on', a.dataset.target === (cur && cur.id)));
+  };
+  $('#main').addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+/* 文档内的 .md 相对链接 → 阅读器路由（相对当前文档解析） */
+function currentDir() {
+  const p = decodeURIComponent(location.hash.slice(2)) || 'README.md';
+  return p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '';
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('article a');
+  if (!a) return;
+  let url; try { url = new URL(a.getAttribute('href'), location.href); } catch { return; }
+  if (url.origin !== location.origin) return;               // 外链照常跳
+  const clean = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+  if (clean.toLowerCase().endsWith('.md')) {                // .md → 站内路由
+    e.preventDefault();
+    const dir = currentDir();
+    const full = clean.includes('/') || !dir ? clean : (dir + '/' + clean.replace(/^\.\//, ''));
+    location.hash = '#/' + full + (url.hash || '');
+  }
+});
+
+async function show() {
+  const p = decodeURIComponent(location.hash.slice(2)) || 'README.md';
+  const art = $('#article');
+  document.querySelectorAll('#nav a').forEach((a) => a.classList.toggle('on', a.dataset.path === p));
+  try {
+    const { content } = await (await fetch('/api/doc?p=' + encodeURIComponent(p))).json();
+    art.innerHTML = `<div class="crumb">${p}</div>` + marked.parse(content);
+    addHeadingIds(art);
+    buildToc(art);
+    watchToc();
+  } catch {
+    art.innerHTML = `<div class="crumb">${p}</div><p>加载失败：文件不存在或路径非法。</p>`;
+  }
+  const anchor = location.hash.includes('#', 2) ? location.hash.slice(location.hash.indexOf('#', 2) + 1) : '';
+  if (anchor) {
+    const t = document.getElementById(anchor);
+    if (t) { t.scrollIntoView(); return; }
+  }
+  $('#main').scrollTop = 0;
+}
+
+window.addEventListener('hashchange', show);
+loadNav().then(show);
+</script>
+</body>
+</html>
