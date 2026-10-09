@@ -71,6 +71,33 @@
 - **免费资源先薅**：零基础训练营、KK 速写团练、月月绘，以及 B 站大量免费公开课。
 - **口碑两面性**（来自 [知乎学员反馈](https://www.zhihu.com/question/370288940)）：体系化、助教改图是真价值；但基础太差（线条不稳、不懂结构）直接上课，作业及格线都难达到——所以路线里把它排在阶段 2 之后。作业量大，**不建议三门同时报**。
 
+### Drawabox —— 英文免费线稿基础体系（阶段 1 的现成替代品）
+
+官网：[drawabox.com](https://drawabox.com)
+
+| 项 | 内容 | 状态 |
+| --- | --- | --- |
+| 定位 | 线条控制 / 椭圆 / 盒子透视的强制作业体系，专为自学设计，社区十年量级学员实践 | 【共识】 |
+| 费用 | 全部课程免费在线阅读（付费仅作业批改服务） | 【共识】 |
+| 网站可达 | 2026-10-09 实测可访问，但页面为 JS 渲染，当次抓取未确认课程结构 | 【实测】 |
+| 语言 | 英文，无官方中文版 | — |
+
+**与 01 方案的关系**：STAGE-01-drills 手册里「超级线条 / 幽灵直线 / 椭圆表」等练习即源自其体系的通识版本。如果英文不构成障碍，可直接跟 Drawabox 原版当阶段 1~2 的主线（它额外覆盖盒子透视，即阶段 2 前半），本库手册作为中文对照。
+
+### Proko —— 英文基础/人体教学（阶段 1、3、4 的补充）
+
+官网：[proko.com](https://www.proko.com)（Stan Prokopenko 创办）【实测 2026-10-09，以下课数为当次抓取】
+
+| 课程 | 规模 | 其中免费 |
+| --- | --- | --- |
+| Drawing Basics | 185 课 / 82 小时 | 58 节免费 |
+| Figure Drawing Fundamentals（人体速写） | — | 32 节免费 |
+| Anatomy of the Human Body | 371 课 / 77 小时 | 115 节免费 |
+| The Perspective Course | — | 32 节免费 |
+| The Gesture Course / Head Drawing 等 | 另有速写、头像、明暗、漫画课 | 各课均有部分免费 |
+
+另有免费工具：Skelly 3D 解剖模型、计时绘画工具、Zolly 透视工具。**用法**：不用整课跟——按 01 方案当前阶段，去对应课程里点免费课单点补强（免费部分已够自学使用）。
+
 ### 免费视频（B站）
 
 | 资源 | 内容 | 状态 |
@@ -120,7 +147,7 @@
 
 ## 来源汇总
 
-- 官网实测（2026-10-09）：[krenz.art](https://krenz.art) · [line-of-action.com](https://line-of-action.com) · [quickposes.com](https://quickposes.com) · [mihuashi.com](https://www.mihuashi.com)
+- 官网实测（2026-10-09）：[krenz.art](https://krenz.art) · [line-of-action.com](https://line-of-action.com) · [quickposes.com](https://quickposes.com) · [mihuashi.com](https://www.mihuashi.com) · [drawabox.com](https://drawabox.com)（JS 渲染，结构未确认） · [proko.com](https://www.proko.com)（含课数）
 - 书单与顺序：[路米斯系列·豆瓣](https://book.douban.com/series/49800) · [知乎：如何系统地自学绘画](https://www.zhihu.com/tardis/sogou/qus/23832639) · [B站：零基础自学绘画路径](https://www.bilibili.com/read/cv8484679)
 - K大口碑：[知乎：上过Krenz课程的感受](https://www.zhihu.com/question/370288940)
 - 软件对比：[知乎](https://www.zhihu.com/question/1940048027306947854) · [Reddit 2025](https://www.reddit.com/r/DigitalPainting/comments/1k2138r/krita_or_csp_pro_in_2025/) · [CSP 官方](https://tips.clip-studio.com/zh-cn/articles/10480)
