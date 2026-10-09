@@ -18,6 +18,15 @@
     --shadow: 0 1px 3px rgba(0,0,0,.4);
   }
   * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll); border-radius: 8px;
+    border: 3px solid transparent; background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-hi); }
+  :root { --scroll: #cfc4b0; --scroll-hi: #a89a82; }
+  html[data-theme="dark"] { --scroll: #3d382f; --scroll-hi: #5b5347; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font: 15px/1.75 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
@@ -71,6 +80,23 @@
   article img { max-width: 100%; }
   article hr { border: none; border-top: 1px solid var(--line); margin: 34px 0; }
   article input[type="checkbox"] { accent-color: var(--accent); margin-right: 4px; }
+  /* ── 迭代日志：时间线卡片 ── */
+  article.log .log-card {
+    background: var(--block-bg); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 10px; padding: 4px 20px 12px; margin: 0 0 26px;
+  }
+  article.log .log-card > h2 {
+    border-top: none; padding-top: 14px; margin: 6px 0 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .log-badge {
+    font-size: 11px; font-weight: 600; letter-spacing: .5px; color: #fff;
+    background: var(--accent); border-radius: 20px; padding: 2px 10px; white-space: nowrap;
+  }
+  .log-date { font-size: 12px; color: var(--ink-2); font-family: Consolas, monospace; white-space: nowrap; }
+  article.log > *:not(.log-card):not(.log-keep) { display: none; }
+  /* ── 侧边栏：最近更新 ── */
+  .nav a .sub { display: block; font-size: 11px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: -1px; }
+  .nav a.on .sub { color: rgba(255,255,255,.8); }
   /* ── 目录 ── */
   nav.toc { border-left: 1px solid var(--line); overflow-y: auto; padding: 44px 12px 30px; }
   .toc h4 { margin: 0 0 10px; font-size: 12px; color: var(--ink-2); letter-spacing: 1px; font-weight: 600; }
@@ -105,18 +131,30 @@ $('#themeBtn').onclick = () => {
   localStorage.setItem('atelier-theme', next);
 };
 
-/* ── 侧边栏：文件树 ── */
+/* ── 侧边栏：文件树 + 最近更新 ── */
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 async function loadNav() {
   const docs = await (await fetch('/api/docs')).json();
-  const nav = $('#nav');
-  let lastGroup = null, html = '';
+  let html = '';
+  try {
+    const recent = await (await fetch('/api/recent')).json();
+    if (recent.length) {
+      html += '<div class="group">最近更新</div>';
+      for (const r of recent.slice(0, 4)) {
+        const name = r.file.split('/').pop().replace(/\.md$/i, '');
+        html += `<a href="#/${esc(r.file)}" data-path="${esc(r.file)}" title="${esc(r.date + ' · ' + r.subject)}">${esc(name)}<span class="sub">${esc(r.subject.slice(0, 16))}</span></a>`;
+      }
+    }
+  } catch { /* 非 git 环境：跳过该分组 */ }
+  let lastGroup = null;
   for (const p of docs) {
     const group = p.includes('/') ? p.slice(0, p.indexOf('/')) : '（根目录）';
-    if (group !== lastGroup) { html += `<div class="group">${group}</div>`; lastGroup = group; }
+    if (group !== lastGroup) { html += `<div class="group">${esc(group)}</div>`; lastGroup = group; }
     const name = p.split('/').pop().replace(/\.md$/i, '');
-    html += `<a href="#/${p}" data-path="${p}" title="${p}">${name}</a>`;
+    html += `<a href="#/${esc(p)}" data-path="${esc(p)}" title="${esc(p)}">${esc(name)}</a>`;
   }
-  nav.innerHTML = html;
+  $('#nav').innerHTML = html;
 }
 
 /* ── 渲染 ── */
@@ -169,13 +207,45 @@ document.addEventListener('click', (e) => {
   }
 });
 
+/* ITERATION-LOG.md 专属：把每个 `## ` 分节包成时间线卡片 */
+function timelineify(art) {
+  const kids = [...art.children];
+  const firstH2 = kids.findIndex((n) => n.tagName === 'H2');
+  if (firstH2 < 0) return;
+  art.classList.add('log');
+  kids.slice(0, firstH2).forEach((n) => n.classList.add('log-keep')); // 标题与引言
+  const heads = kids.filter((n) => n.tagName === 'H2');
+  for (let i = heads.length - 1; i >= 0; i--) { // 倒序包裹，避免节点位移干扰
+    const h = heads[i];
+    const card = document.createElement('section');
+    card.className = 'log-card';
+    art.insertBefore(card, h);
+    card.appendChild(h);
+    let sib = card.nextSibling;
+    while (sib) {
+      const next = sib.nextSibling;
+      if (sib.tagName === 'H2') break;
+      card.appendChild(sib);
+      sib = next;
+    }
+    while (card.lastElementChild && card.lastElementChild.tagName === 'HR') card.lastElementChild.remove();
+    const m = h.textContent.match(/(\d{4}-\d{2}-\d{2})\s*·\s*(迭代\s*\d+)/);
+    if (m) {
+      const date = document.createElement('span'); date.className = 'log-date'; date.textContent = m[1];
+      const badge = document.createElement('span'); badge.className = 'log-badge'; badge.textContent = m[2];
+      h.prepend(date); h.prepend(badge);
+    }
+  }
+}
+
 async function show() {
   const p = decodeURIComponent(location.hash.slice(2)) || 'README.md';
   const art = $('#article');
   document.querySelectorAll('#nav a').forEach((a) => a.classList.toggle('on', a.dataset.path === p));
   try {
     const { content } = await (await fetch('/api/doc?p=' + encodeURIComponent(p))).json();
-    art.innerHTML = `<div class="crumb">${p}</div>` + marked.parse(content);
+    art.innerHTML = `<div class="crumb">${esc(p)}</div>` + marked.parse(content);
+    if (p === 'ITERATION-LOG.md') timelineify(art);
     addHeadingIds(art);
     buildToc(art);
     watchToc();

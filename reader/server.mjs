@@ -54,6 +54,29 @@ const server = http.createServer(async (req, res) => {
       return send(200, 'application/json; charset=utf-8', JSON.stringify(docs));
     }
 
+    if (url.pathname === '/api/recent') {
+      // 每个文件最近一次被哪个 commit 改过；非 git 环境优雅降级为空数组
+      const { execFile } = await import('node:child_process');
+      const out = await new Promise((resolve) => {
+        execFile('git', ['log', '-n', '40', '--name-only', '--diff-filter=AM',
+          '--pretty=format:%x00%ad%x00%s', '--date=short'],
+          { cwd: ROOT }, (err, stdout) => resolve(err ? '' : String(stdout)));
+      });
+      const recent = [];
+      // pretty=%x00%ad%x00%s 产出的 piece 序列（去掉开头空块后）：date、subject+files、date、…
+      const pieces = out.split('\0').slice(1);
+      for (let i = 0; i + 1 < pieces.length; i += 2) {
+        const date = pieces[i].trim();
+        const [subject, ...files] = pieces[i + 1].split('\n');
+        if (!subject || !date) continue;
+        for (const f of files.map((s) => s.trim()).filter(Boolean)) {
+          if (!f.toLowerCase().endsWith('.md')) continue;
+          if (!recent.some((r) => r.file === f)) recent.push({ file: f, subject: subject.trim(), date });
+        }
+      }
+      return send(200, 'application/json; charset=utf-8', JSON.stringify(recent.slice(0, 6)));
+    }
+
     if (url.pathname === '/api/doc') {
       const rel = decodeURIComponent(url.searchParams.get('p') || '');
       const full = path.resolve(ROOT, rel);
