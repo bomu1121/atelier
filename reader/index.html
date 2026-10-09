@@ -174,18 +174,20 @@ function buildToc(container) {
   ).join('');
 }
 
-/* 滚动时高亮 TOC 当前小节 */
+/* 滚动时高亮 TOC 当前小节（监听只绑一次，每次渲染后手动刷新一次） */
+let tocBound = false;
 function watchToc() {
-  const links = [...document.querySelectorAll('#toc a')];
-  if (!links.length) return;
-  const heads = links.map((a) => document.getElementById(a.dataset.target)).filter(Boolean);
-  const onScroll = () => {
+  const highlight = () => {
+    const links = [...document.querySelectorAll('#toc a')];
+    if (!links.length) return;
+    const heads = links.map((a) => document.getElementById(a.dataset.target)).filter(Boolean);
+    if (!heads.length) return;
     let cur = heads[0];
     for (const h of heads) if (h.getBoundingClientRect().top < 90) cur = h;
     links.forEach((a) => a.classList.toggle('on', a.dataset.target === (cur && cur.id)));
   };
-  $('#main').addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  if (!tocBound) { $('#main').addEventListener('scroll', highlight, { passive: true }); tocBound = true; }
+  highlight();
 }
 
 /* 文档内的 .md 相对链接 → 阅读器路由（相对当前文档解析） */
@@ -241,6 +243,7 @@ function timelineify(art) {
 async function show() {
   const p = decodeURIComponent(location.hash.slice(2)) || 'README.md';
   const art = $('#article');
+  art.classList.remove('log'); // 离开时间线页时必须摘掉，否则普通文档会被 .log 的 CSS 整页隐藏
   document.querySelectorAll('#nav a').forEach((a) => a.classList.toggle('on', a.dataset.path === p));
   try {
     const { content } = await (await fetch('/api/doc?p=' + encodeURIComponent(p))).json();
