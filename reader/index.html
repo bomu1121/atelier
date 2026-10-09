@@ -80,20 +80,25 @@
   article img { max-width: 100%; }
   article hr { border: none; border-top: 1px solid var(--line); margin: 34px 0; }
   article input[type="checkbox"] { accent-color: var(--accent); margin-right: 4px; }
-  /* ── 迭代日志：时间线卡片 ── */
-  article.log .log-card {
-    background: var(--block-bg); border: 1px solid var(--line); border-left: 3px solid var(--accent);
-    border-radius: 10px; padding: 4px 20px 12px; margin: 0 0 26px;
+  /* ── 迭代日志：扁平时间线（无盒子，左侧轴线 + 节点） ── */
+  article.log > hr.log-keep { display: none; }
+  article.log > *:not(.log-sec):not(.log-keep):not(.crumb) { display: none; }
+  article.log .log-sec {
+    position: relative; border-left: 2px solid var(--line);
+    padding-left: 22px;
   }
-  article.log .log-card > h2 {
-    border-top: none; padding-top: 14px; margin: 6px 0 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  article.log .log-sec:not(:last-of-type) { padding-bottom: 34px; }
+  article.log .log-sec:last-of-type { padding-bottom: 6px; }
+  article.log .log-sec::before {
+    content: ''; position: absolute; left: -7px; top: 7px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--accent);
   }
-  .log-badge {
-    font-size: 11px; font-weight: 600; letter-spacing: .5px; color: #fff;
-    background: var(--accent); border-radius: 20px; padding: 2px 10px; white-space: nowrap;
+  .log-eyebrow {
+    font-family: Consolas, monospace; font-size: 11.5px; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: 1px; margin: 26px 0 4px;
   }
-  .log-date { font-size: 12px; color: var(--ink-2); font-family: Consolas, monospace; white-space: nowrap; }
-  article.log > *:not(.log-card):not(.log-keep) { display: none; }
+  article.log .log-sec h2 { border-top: none; padding-top: 0; margin: 0 0 12px; font-size: 19px; }
   /* ── 侧边栏：最近更新 ── */
   .nav a .sub { display: block; font-size: 11px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: -1px; }
   .nav a.on .sub { color: rgba(255,255,255,.8); }
@@ -209,7 +214,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-/* ITERATION-LOG.md 专属：把每个 `## ` 分节包成时间线卡片 */
+/* ITERATION-LOG.md 专属：扁平时间线——左侧轴线 + 节点，标题拆出日期行 */
 function timelineify(art) {
   const kids = [...art.children];
   const firstH2 = kids.findIndex((n) => n.tagName === 'H2');
@@ -219,23 +224,28 @@ function timelineify(art) {
   const heads = kids.filter((n) => n.tagName === 'H2');
   for (let i = heads.length - 1; i >= 0; i--) { // 倒序包裹，避免节点位移干扰
     const h = heads[i];
-    const card = document.createElement('section');
-    card.className = 'log-card';
-    art.insertBefore(card, h);
-    card.appendChild(h);
-    let sib = card.nextSibling;
+    const sec = document.createElement('section');
+    sec.className = 'log-sec';
+    art.insertBefore(sec, h);
+    sec.appendChild(h);
+    let sib = sec.nextSibling;
     while (sib) {
       const next = sib.nextSibling;
       if (sib.tagName === 'H2') break;
-      card.appendChild(sib);
+      sec.appendChild(sib);
       sib = next;
     }
-    while (card.lastElementChild && card.lastElementChild.tagName === 'HR') card.lastElementChild.remove();
-    const m = h.textContent.match(/(\d{4}-\d{2}-\d{2})\s*·\s*(迭代\s*\d+)/);
+    while (sec.lastElementChild && sec.lastElementChild.tagName === 'HR') sec.lastElementChild.remove();
+    // 「2026-10-09 · 迭代 04：标题」→ eyebrow 小字行（日期+迭代号）+ 纯标题 h2
+    const m = h.textContent.match(/^(\d{4}-\d{2}-\d{2})\s*·\s*(迭代\s*\d+)：?\s*/);
     if (m) {
-      const date = document.createElement('span'); date.className = 'log-date'; date.textContent = m[1];
-      const badge = document.createElement('span'); badge.className = 'log-badge'; badge.textContent = m[2];
-      h.prepend(date); h.prepend(badge);
+      const eyebrow = document.createElement('div');
+      eyebrow.className = 'log-eyebrow';
+      eyebrow.textContent = m[1] + ' · ' + m[2];
+      h.replaceWith(eyebrow);
+      const nh = document.createElement('h2');
+      nh.textContent = h.textContent.slice(m[0].length);
+      eyebrow.after(nh);
     }
   }
 }
