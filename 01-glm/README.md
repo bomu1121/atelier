@@ -47,7 +47,7 @@
 
 **本周任务**：装好软件 → 调压感 → 各画 30 分钟线条感受手感。结束。
 
-> 画布尺寸、DPI 误区、压感曲线、稳定器档位、笔刷配置的具体参数：见知识模块 [M02 · 画布、压感与稳定器](../knowledge/M02-canvas-and-pressure.md)。
+> 画布尺寸、DPI 误区、压感曲线、稳定器档位、笔刷配置的具体参数：见知识模块 [M02 · 画布、压感与稳定器](../knowledge/M02-canvas-and-pressure.md)；装好后跑一遍 [M07 · 数位板排障预检](../knowledge/M07-tablet-troubleshooting.md)（顺便把「万一压感没了怎么办」提前存档）。
 
 ---
 
