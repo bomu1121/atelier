@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-10-10 · 迭代 07：桌面快捷方式
+
+**触发**：用户指令「最好写一个桌面快捷方式用于我打开这个」。
+
+**交付**：`tools/start-reader.cmd`（启动器，纯 ASCII，路径用 `%~dp0` 运行时推导，含 node 缺失时的友好报错与 pause 防闪退）+ `tools/create-shortcut.ps1`（建快捷方式，纯 ASCII——规避本机 PowerShell 以 GBK 读 .ps1 的已知坑；桌面路径用 `GetFolderPath` 运行时取，天然兼容桌面重定向）。已在本机创建 `D:\桌面\atelier reader.lnk`（实测本机桌面重定向到 D 盘），窗口最小化、图标用 node.exe。
+
+**验证**：`.lnk` 文件确认存在；端到端——通过 `start-reader.cmd` 实际启动 → 服务器 8765 应答 HTTP 200、`/api/docs` 返回 6 个文件。快捷方式本体（WScript.Shell COM 属性）未逐一断言 TargetPath 落盘值，但启动链路已实测。
+
+---
+
 ## 2026-10-09 · 迭代 06：时间线改扁平化（去卡片）
 
 **触发**：用户反馈「层层包裹的形式会影响整齐的程度，我很不喜欢」。
