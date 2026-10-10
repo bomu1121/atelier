@@ -47,11 +47,14 @@
 
 **本周任务**：装好软件 → 调压感 → 各画 30 分钟线条感受手感。结束。
 
+> 画布尺寸、DPI 误区、压感曲线、稳定器档位、笔刷配置的具体参数：见知识模块 [M02 · 画布、压感与稳定器](../knowledge/M02-canvas-and-pressure.md)。
+
 ---
 
 ## 阶段 1：线条与观察能力（第 1~2 个月）
 
 > **本阶段已展开为 8 周操作手册：[STAGE-01-drills.md](./STAGE-01-drills.md)**（每周课表、每个练习的落笔要领、对错标准、常见错误修正表）。以下只保留概要。
+> 配套知识模块：[M01 笔控机制](../knowledge/M01-pen-control.md) · [M03 计时速写操作](../knowledge/M03-timed-sketch.md) · [M04 叠图对比](../knowledge/M04-overlay-compare.md) · [M05 素材与版权](../knowledge/M05-practice-material.md)。
 
 **目标：让手听大脑的话。** 你现在「临摹过但说不清透视结构」，最大的坑不是知识不够，是手跟不上眼——这个阶段就是解决它。
 

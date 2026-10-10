@@ -7,6 +7,7 @@
 | 目录 | 内容 |
 | --- | --- |
 | `NN-模型或表述/` | 一份完整的绘画指导方案（不同 AI 模型 / 不同表述方式各生成一份，平权并存，供对比） |
+| `knowledge/` | 知识模块（计划无关的小知识：握笔、画布设置、速写操作……所有方案共用） |
 | `qa/` | 针对细节的请教记录（方案是大纲粒度，细节靠一次次问答沉淀） |
 | `practice/` | 练习存档（按 `年-月/日期-主题` 归档，如果开始画了再说） |
 
@@ -55,10 +56,18 @@ atelier/
 │   ├── README.md        # 路线本体（六阶段 + 出师自查标准）
 │   ├── STAGE-01-drills.md # 阶段 1 操作手册（8 周课表 + 逐练习要领）
 │   └── RESOURCES.md     # 资料清单（每条带验证状态）
+├── knowledge/           # 知识模块（计划无关，M01~M05，所有方案共用）
+│   ├── README.md        # 模块索引 + 写作标准
+│   ├── M01-pen-control.md        # 笔控机制：握笔与发力链
+│   ├── M02-canvas-and-pressure.md # 画布、压感与稳定器
+│   ├── M03-timed-sketch.md       # 计时速写操作手册
+│   ├── M04-overlay-compare.md    # 叠图对比
+│   └── M05-practice-material.md  # 临摹素材：来源/版权/难度
 ├── reader/              # 本库专属阅读器（零依赖 Node 服务）
 │   ├── server.mjs       # 启动入口
 │   ├── index.html       # 阅读页（内嵌样式与逻辑）
 │   └── vendor/marked.min.js
+├── tools/               # 桌面快捷方式（start-reader.cmd / create-shortcut.ps1）
 ├── qa/
 │   └── TEMPLATE.md      # 请教记录模板
 └── practice/            # （预留）练习存档
